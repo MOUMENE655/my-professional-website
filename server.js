@@ -1,3 +1,11 @@
+const express = require('express');
+const fs = require('fs');
+const path = require('path');
+const app = express();
+
+// لتفسير البيانات المرسلة في الـ POST كـ JSON
+app.use(express.json());
+
 app.post('/send-message', (req, res) => {
     const { name, email, message } = req.body;
 
@@ -24,4 +32,9 @@ app.post('/send-message', (req, res) => {
         }
         res.status(200).send('تم إرسال الرسالة بنجاح!');
     });
+});
+
+// بدء الخادم
+app.listen(3000, () => {
+    console.log('الخادم يعمل على المنفذ 3000');
 });

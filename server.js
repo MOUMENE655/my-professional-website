@@ -1,29 +1,14 @@
 const express = require('express');
-const fs = require('fs');
 const path = require('path');
 const app = express();
 const port = 3000;
 
-// لاستخراج البيانات من النموذج
-app.use(express.json());  // لمعالجة بيانات JSON
-app.use(express.urlencoded({ extended: true }));  // لمعالجة بيانات URL-encoded
-
-// تحديد مسار ملفاتك الثابتة (مثل HTML و CSS)
-app.use(express.static('public'));
+// تحديد المسار لملفاتك الثابتة (يجب أن تكون في الجذر الآن)
+app.use(express.static(path.join(__dirname)));
 
 // التعامل مع إرسال الرسائل
 app.post('/send-message', (req, res) => {
     const { name, email, message } = req.body;
-
-    // التحقق من البيانات المستلمة
-    console.log('الاسم:', name);
-    console.log('البريد الإلكتروني:', email);
-    console.log('الرسالة:', message);
-
-    // التحقق إذا كانت البيانات قد تم استلامها بشكل صحيح
-    if (!name || !email || !message) {
-        return res.status(400).send('الرجاء ملء جميع الحقول.');
-    }
 
     // تنسيق الرسالة
     const messageContent = `

@@ -1,27 +1,27 @@
 const express = require('express');
 const path = require('path');
-const fs = require('fs');  // للتعامل مع الملفات
+const fs = require('fs');
 const app = express();
 
-// لإمكانية إرسال بيانات JSON من العميل
-app.use(express.json()); // للتعامل مع البيانات من نوع JSON
-app.use(express.static(path.join(__dirname, 'public'))); // إذا كان لديك ملفات ثابتة في مجلد public
+const port = process.env.PORT || 3000; // استخدام المنفذ الذي تعينه Heroku
 
-// خدمة 'index.html' من الجذر
+// إعداد Express
+app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
+
+// نقطة النهاية لخدمة 'index.html'
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));  // إرسال ملف 'index.html' من الجذر مباشرة
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// نقطة النهاية لاستقبال الرسائل وحفظها في ملف
+// نقطة النهاية لمعالجة الرسائل
 app.post('/send-message', (req, res) => {
     const { name, email, message } = req.body;
 
-    // التأكد من وجود البيانات المطلوبة
     if (!name || !email || !message) {
         return res.status(400).send('الرجاء تعبئة جميع الحقول');
     }
 
-    // تنسيق الرسالة
     const messageContent = `
     =========================
     الاسم: ${name}
@@ -31,16 +31,13 @@ app.post('/send-message', (req, res) => {
     =========================
     \n`;
 
-    // المسار حيث سيتم حفظ الرسائل
     const messagesDir = 'messages';
     const filePath = path.join(messagesDir, 'messages.txt');
 
-    // إذا لم يكن مجلد الرسائل موجودًا، قم بإنشائه
     if (!fs.existsSync(messagesDir)) {
         fs.mkdirSync(messagesDir, { recursive: true });
     }
 
-    // كتابة الرسالة في الملف
     fs.appendFile(filePath, messageContent, (err) => {
         if (err) {
             return res.status(500).send('حدث خطأ أثناء حفظ الرسالة.');
@@ -49,8 +46,7 @@ app.post('/send-message', (req, res) => {
     });
 });
 
-// بدء الخادم على المنفذ 3000
-app.listen(3000, () => {
-    console.log('الخادم يعمل على المنفذ 3000');
+// بدء الخادم
+app.listen(port, () => {
+    console.log(`الخادم يعمل على المنفذ ${port}`);
 });
-
